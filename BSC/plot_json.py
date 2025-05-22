@@ -1,25 +1,29 @@
+import os
 import json
+import pandas as pd
+import matplotlib.pyplot as plt
 from datetime import datetime
 
-import matplotlib.pyplot as plt
-import pandas as pd
+# Automatically get directory where this script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(script_dir, "data", "BSC3K.json")
 
-# Load the JSON file
-file_path = ".BSC3K.json"  # Update this path as needed
+# Check if file exists
+if not os.path.exists(file_path):
+    raise FileNotFoundError(f"File not found: {file_path}")
+
+# Load and parse the JSON file
 with open(file_path, "r") as f:
     json_data = json.load(f)
 
-# Extract the matrix data
 raw_values = json_data["data"]["result"][0]["values"]
-
-# Convert to DataFrame
 df = pd.DataFrame(raw_values, columns=["timestamp", "value"])
 df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
 df["value"] = df["value"].astype(float)
 
-# Plot the data
+# Plot
 plt.figure(figsize=(12, 6))
-plt.plot(df["timestamp"], df["value"], marker='o', linestyle='-')
+plt.plot(df["timestamp"], df["value"], marker='o', linestyle='-', color='orange')
 plt.title("Temperature Over Time")
 plt.xlabel("Timestamp")
 plt.ylabel("Temperature (mK)")
